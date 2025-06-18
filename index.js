@@ -1,0 +1,4 @@
+import { Graph } from "./graph.js";
+
+const graph = new Graph();
+console.log(graph);
