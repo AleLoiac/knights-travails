@@ -6,17 +6,17 @@ export class Graph {
   }
 
   buildGraph() {
-    const list = [];
+    const map = new Map();
 
     for (let i = 0; i < 8; i++) {
       for (let j = 0; j < 8; j++) {
         const node = new Node(i, j);
         node.moves = this.calculateMoves(i, j);
-        list.push(node);
+        map.set(node.coordinates, node);
       }
     }
 
-    return list;
+    return map;
   }
 
   calculateMoves(x, y) {
