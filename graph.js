@@ -12,7 +12,7 @@ export class Graph {
       for (let j = 0; j < 8; j++) {
         const node = new Node(i, j);
         node.moves = this.calculateMoves(i, j);
-        map.set(this.#arrayToString(node.coordinates), node);
+        map.set(this.#arrayToKey(node.coordinates), node);
       }
     }
 
@@ -44,11 +44,9 @@ export class Graph {
   }
 
   knightMoves(start, end) {
-    for (const node of this.adjacencyList.values()) {
-      node.parent = null;
-    }
+    this.#resetGraph();
 
-    const startingNode = this.adjacencyList.get(this.#arrayToString(start));
+    const startingNode = this.adjacencyList.get(this.#arrayToKey(start));
     const queue = [];
 
     startingNode.parent = "start";
@@ -56,16 +54,13 @@ export class Graph {
 
     while (queue.length > 0) {
       let currentNode = queue.shift();
-      if (
-        this.#arrayToString(currentNode.coordinates) ===
-        this.#arrayToString(end)
-      ) {
+      if (this.#arrayToKey(currentNode.coordinates) === this.#arrayToKey(end)) {
         const path = [];
         let tmp = currentNode;
 
         while (tmp.parent !== "start") {
           path.push(tmp.coordinates);
-          tmp = this.adjacencyList.get(this.#arrayToString(tmp.parent));
+          tmp = this.adjacencyList.get(this.#arrayToKey(tmp.parent));
         }
         path.push(startingNode.coordinates);
 
@@ -80,7 +75,7 @@ export class Graph {
 
       const moves = currentNode.moves;
       for (const move of moves) {
-        const node = this.adjacencyList.get(this.#arrayToString(move));
+        const node = this.adjacencyList.get(this.#arrayToKey(move));
 
         if (node.parent === null) {
           node.parent = currentNode.coordinates;
@@ -90,7 +85,13 @@ export class Graph {
     }
   }
 
-  #arrayToString(arr) {
-    return JSON.stringify(arr);
+  #arrayToKey([x, y]) {
+    return `${x},${y}`;
+  }
+
+  #resetGraph() {
+    for (const node of this.adjacencyList.values()) {
+      node.parent = null;
+    }
   }
 }
