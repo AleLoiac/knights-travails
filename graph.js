@@ -12,7 +12,7 @@ export class Graph {
       for (let j = 0; j < 8; j++) {
         const node = new Node(i, j);
         node.moves = this.calculateMoves(i, j);
-        map.set(node.coordinates, node);
+        map.set(this.#arrayToString(node.coordinates), node);
       }
     }
 
@@ -41,5 +41,56 @@ export class Graph {
       return false;
     }
     return true;
+  }
+
+  knightMoves(start, end) {
+    for (const node of this.adjacencyList.values()) {
+      node.parent = null;
+    }
+
+    const startingNode = this.adjacencyList.get(this.#arrayToString(start));
+    const queue = [];
+
+    startingNode.parent = "start";
+    queue.push(startingNode);
+
+    while (queue.length > 0) {
+      let currentNode = queue.shift();
+      if (
+        this.#arrayToString(currentNode.coordinates) ===
+        this.#arrayToString(end)
+      ) {
+        const path = [];
+        let tmp = currentNode;
+
+        while (tmp.parent !== "start") {
+          path.push(tmp.coordinates);
+          tmp = this.adjacencyList.get(this.#arrayToString(tmp.parent));
+        }
+        path.push(startingNode.coordinates);
+
+        console.log(
+          `=> You made it in ${path.length - 1} moves! Here's your path:`
+        );
+        for (let i = path.length - 1; i >= 0; i--) {
+          console.log(path[i]);
+        }
+        return;
+      }
+
+      const moves = currentNode.moves;
+      for (const move of moves) {
+        const node = this.adjacencyList.get(this.#arrayToString(move));
+
+        if (node.parent === null) {
+          node.parent = currentNode.coordinates;
+          queue.push(node);
+        }
+      }
+    }
+  }
+
+  #arrayToString(arr) {
+    return JSON.stringify(arr);
   }
 }
